@@ -1,7 +1,5 @@
 import random
-
-n = 10
-m = 1000000
+import matplotlib.pyplot as plt
 
 def one_choice(m, n) :
     bins = [0] * n
@@ -112,6 +110,57 @@ def quartile_value(values):
     quartile_index = int(0.75  * len(sorted_values))
     return sorted_values[quartile_index]
 
+def calculate_gap(bins):
+    expected_value = sum(bins) / len(bins)  
+    max_load = max(bins) 
+    gap = max_load - expected_value  
+    return gap
+
+def main(T, m):
+    n_values = [10, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, m*m]
+    
+    functions = {
+        "One-choice": one_choice,
+        "Two-choice": two_choice,
+        "Three-choice": three_choice,
+        "d-choice (d=5)": lambda n, m: d_choice(n, m, 5),  # Exemple avec d=2
+        "d-choice (d=7)": lambda n, m: d_choice(n, m, 7),  # Exemple avec d=2
+        "b-probability choice (b=0.25)": lambda n, m: b_probability_choice(n, m, 0.25),
+        "b-probability choice (b=0.5)": lambda n, m: b_probability_choice(n, m, 0.5),
+        "b-probability choice (b=0.75)": lambda n, m: b_probability_choice(n, m, 0.75),
+        "Two choice 10-batched": lambda n, m: two_choice_batched(n, m, 10),
+        "Two choice 100-batched": lambda n, m: two_choice_batched(n, m, 100),
+        "Two choice 1000-batched": lambda n, m: two_choice_batched(n, m, 1000),
+        "Question based choice (k=1)": lambda n, m: question_based_choice(n, m, 1),
+        "Question based choice (k=2)": lambda n, m: question_based_choice(n, m, 2)
+    }
+
+    avg_gaps_results = {name: [] for name in functions}
+
+    for n in n_values:
+        for name, func in functions.items():
+            gaps = []
+            for _ in range(T):
+                bins = func(n, m)  
+                gap = calculate_gap(bins)
+                gaps.append(gap)
+            avg_gap = sum(gaps) / T 
+            avg_gaps_results[name].append(avg_gap)
+
+    for name, avg_gaps in avg_gaps_results.items():
+        plt.figure()
+        plt.bar([str(n) for n in n_values], avg_gaps) 
+        plt.title(f"Mean gap of {name} for different value of n for m = {m}")
+        plt.xlabel("Number of balls (n)")
+        plt.ylabel("Mean Gab")
+        plt.show()
+
+# Appel de la fonction main
+T = 20  # Nombre d'exécutions
+m = 400  # Nombre de cases (bins)
+main(T, m)
+
+"""
 print("One-choice : ")
 print(one_choice(m, n))
     
@@ -136,3 +185,4 @@ print(two_choice_batched(m, n, 1000))
 # k=1 for first question only // k=2 for the two questions
 print("Question based choice : ")
 print(question_based_choice(m, n, 1))
+"""

@@ -1,0 +1,3 @@
+If python is installed on your computer, just run the file with a command prompt
+You can use main function to plot each function for different number of balls. You can input m the number of bins and T the number of iteration per function and per number of balls.
+You can also run each function singlehandly
